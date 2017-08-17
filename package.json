@@ -22,7 +22,8 @@
     "mongoose" :"*",
     "passport": "*",
     "passport-http" : "*",
-    "passport-local" :"*"  
+    "passport-local" :"*" ,
+    "nodemailer": "0.7.1" 
  
   }
 }

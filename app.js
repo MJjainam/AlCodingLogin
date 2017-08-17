@@ -13,6 +13,10 @@ var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/loginApp');
 var db = mongoose.connection;
 
+var crypto = require('crypto');
+var nodemailer = require('nodemailer');
+
+
 var routes = require('./routes/index');
 var users = require('./routes/users');
 

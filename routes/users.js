@@ -2,10 +2,12 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
+var Token = require('../models/token');
+var crypto = require('crypto');
 
 var User = require('../models/user');  //model stores all the logical part. Importing 
 									   //functions assosiated with the user.
-
+var nodemailer = require('nodemailer');
 // Register
 router.get('/register', function(req, res){
 	res.render('register');
@@ -47,23 +49,46 @@ router.post('/register', function(req, res){
 			password: password
 		});
 
-		User.createUser(newUser, function(err, user){
-			if(err){
-				if (err.name === 'MongoError' && err.code === 11000) {
-					// Duplicate username
-					console.log(err);
-					req.flash('error_msg',"User already exists");
-					res.render('register',{errors: 
-						 [ { msg: 'User already exists' } ]
-				  });
-				}
-			}
-			else{
-				console.log('user registred');
-				res.redirect('/users/login');
-				req.flash('success_msg', 'You are registered and can now login');
-			}
+
+		newUser.save(function (err) {
+			if (err) { return res.status(500).send({ msg: err.message }); }
+	 
+			// Create a verification token for this user
+			var token = new Token({ _userId: newUser._id, token: crypto.randomBytes(16).toString('hex') });
+	 
+			// Save the verification token
+			token.save(function (err) {
+				if (err) { return res.status(500).send({ msg: err.message }); }
+	 
+				// Send the email
+				console.log("sending mail")
+				var transporter = nodemailer.createTransport("SMTP",{ service: 'gmail', auth: { user: "algocodingpesu@gmail.com", pass: "algocoding2017" } });
+				var mailOptions = { from: 'algocodingpesu@gmail.com', to: newUser.email, subject: 'Account Verification Token', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/confirmation\/' + token.token + '.\n' };
+				transporter.sendMail(mailOptions, function (err) {
+					if (err) { return res.status(500).send({ msg: err.message }); }
+					res.status(200).send('A verification email has been sent to ' + newUser.email + '.');
+				});
+			});
 		});
+
+
+		// User.createUser(newUser, function(err, user){
+		// 	if(err){
+		// 		if (err.name === 'MongoError' && err.code === 11000) {
+		// 			// Duplicate username
+		// 			console.log(err);
+		// 			req.flash('error_msg',"User already exists");
+		// 			res.render('register',{errors: 
+		// 				 [ { msg: 'User already exists' } ]
+		// 		  });
+		// 		}
+		// 	}
+		// 	else{
+		// 		console.log('user registred');
+		// 		res.redirect('/users/login');
+		// 		req.flash('success_msg', 'You are registered and can now login');
+		// 	}
+		// });
 
 
 	}
