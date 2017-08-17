@@ -35,6 +35,7 @@ router.post('/register', function(req, res){
 	var errors = req.validationErrors();
 
 	if(errors){
+		console.log(errors);
 		res.render('register',{
 			errors:errors
 		});
@@ -47,13 +48,24 @@ router.post('/register', function(req, res){
 		});
 
 		User.createUser(newUser, function(err, user){
-			if(err) throw err;
-			console.log(user);
+			if(err){
+				if (err.name === 'MongoError' && err.code === 11000) {
+					// Duplicate username
+					console.log(err);
+					req.flash('error_msg',"User already exists");
+					res.render('register',{errors: 
+						 [ { msg: 'User already exists' } ]
+				  });
+				}
+			}
+			else{
+				console.log('user registred');
+				res.redirect('/users/login');
+				req.flash('success_msg', 'You are registered and can now login');
+			}
 		});
 
-		req.flash('success_msg', 'You are registered and can now login');
 
-		res.redirect('/users/login');
 	}
 });
 

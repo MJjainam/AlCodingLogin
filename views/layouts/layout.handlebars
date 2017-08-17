@@ -15,18 +15,19 @@
         <nav>
           <ul class="nav nav-pills float-right">
              {{#if user}}
-            <li class="nav-item">
+             <li class="nav-item">
               <a class="nav-link active" href="/">Home <span class="sr-only">(current)</span></a>
             </li>
+           
             <li class="nav-item">
-              <a class="nav-link" href="/users/login">Login</a>
+              <a class="nav-link" href="/users/logout">Logout</a>
             </li>
             {{else}}
-            <li class="nav-item">
+             <li class="nav-item">
               <a class="nav-link" href="/users/register">Register</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/users/logout">Logout</a>
+              <a class="nav-link" href="/users/login">Login</a>
             </li>
             {{/if}}
           </ul>
