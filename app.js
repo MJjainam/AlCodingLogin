@@ -13,6 +13,10 @@ var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/loginApp');
 var db = mongoose.connection;
 
+var crypto = require('crypto');
+var nodemailer = require('nodemailer');
+
+
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
@@ -86,3 +90,4 @@ app.set('port', (process.env.PORT || 3000));
 app.listen(app.get('port'), function(){
 	console.log('Server started on port '+app.get('port'));
 });
+

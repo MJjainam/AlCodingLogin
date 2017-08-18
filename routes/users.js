@@ -2,22 +2,26 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
+var Token = require('../models/token');
+var crypto = require('crypto');
 
 var User = require('../models/user');  //model stores all the logical part. Importing 
-									   //functions assosiated with the user.
+//functions assosiated with the user.
+var nodemailer = require('nodemailer');
 
 // Register
-router.get('/register', function(req, res){
+router.get('/register', function (req, res) {
+	console.log("ad");
 	res.render('register');
 });
 
 // Login
-router.get('/login', function(req, res){
+router.get('/login', function (req, res) {
 	res.render('login');
 });
 
 // Register User
-router.post('/register', function(req, res){
+router.post('/register', function (req, res) {
 	var name = req.body.name;
 	var email = req.body.email;
 	var username = req.body.username;
@@ -34,34 +38,56 @@ router.post('/register', function(req, res){
 
 	var errors = req.validationErrors();
 
-	if(errors){
+	if (errors) {
 		console.log(errors);
-		res.render('register',{
-			errors:errors
+		res.render('register', {
+			errors: errors
 		});
 	} else {
 		var newUser = new User({
 			name: name,
-			email:email,
+			email: email,
 			username: username,
 			password: password
 		});
 
-		User.createUser(newUser, function(err, user){
-			if(err){
+
+		User.createUser(newUser, function (err, user) {
+			if (err) {
 				if (err.name === 'MongoError' && err.code === 11000) {
 					// Duplicate username
 					console.log(err);
-					req.flash('error_msg',"User already exists");
-					res.render('register',{errors: 
-						 [ { msg: 'User already exists' } ]
-				  });
+					req.flash('error_msg', "User already exists");
+					res.render('register', {
+						errors:
+						[{ msg: 'User already exists' }]
+					});
+				}
+				else {
+					return res.status(500).send({ msg: err.message });
 				}
 			}
-			else{
-				console.log('user registred');
-				res.redirect('/users/login');
-				req.flash('success_msg', 'You are registered and can now login');
+			else {
+
+				// Create a verification token for this user
+				var token = new Token({ _userId: newUser._id, token: crypto.randomBytes(16).toString('hex') });
+
+				// Save the verification token
+				token.save(function (err) {
+					if (err) { return res.status(500).send({ msg: err.message }); }
+
+					// Send the email
+					console.log("sending mail")
+					var transporter = nodemailer.createTransport("SMTP", { service: 'gmail', auth: { user: "algocodingpesu@gmail.com", pass: "algocoding2017" } });
+					var mailOptions = { from: 'algocodingpesu@gmail.com', to: newUser.email, subject: 'Account Verification Token', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/confirmation\/' + token.token + '.\n' };
+					transporter.sendMail(mailOptions, function (err) {
+						if (err) { return res.status(500).send({ msg: err.message }); }
+						res.status(200).send('A verification email has been sent to ' + newUser.email + '.');
+					});
+				});
+				// console.log('user registred');
+				// res.redirect('/users/login');
+				// req.flash('success_msg', 'You are registered and can now login');
 			}
 		});
 
@@ -70,46 +96,50 @@ router.post('/register', function(req, res){
 });
 
 passport.use(new LocalStrategy(
-  function(username, password, done) {
-   User.getUserByUsername(username, function(err, user){
-   	if(err) throw err;
-   	if(!user){
-   		return done(null, false, {message: 'Unknown User'});
-   	}
+	function (username, password, done) {
+		User.getUserByUsername(username, function (err, user) {
+			if (err) throw err;
+			if (!user) {
+				return done(null, false, { message: 'Unknown User' });
+			}
 
-   	User.comparePassword(password, user.password, function(err, isMatch){
-   		if(err) throw err;
-   		if(isMatch){
-   			return done(null, user);
-   		} else {
-   			return done(null, false, {message: 'Invalid password'});
-   		}
-   	});
-   });
-  }));
+			User.comparePassword(password, user.password, function (err, isMatch) {
+				if (err) throw err;
+				if (isMatch) {
+					return done(null, user);
+				} else {
+					return done(null, false, { message: 'Invalid password' });
+				}
+			});
+		});
+	}));
 
-passport.serializeUser(function(user, done) {
-  done(null, user.id);
+passport.serializeUser(function (user, done) {
+	done(null, user.id);
 });
 
-passport.deserializeUser(function(id, done) {
-  User.getUserById(id, function(err, user) {
-    done(err, user);
-  });
+passport.deserializeUser(function (id, done) {
+	User.getUserById(id, function (err, user) {
+		done(err, user);
+	});
 });
 
 router.post('/login',
-  passport.authenticate('local', {successRedirect:'/', failureRedirect:'/users/login',failureFlash: true}),
-  function(req, res) {
-    res.redirect('/');
-  });
+	passport.authenticate('local', { successRedirect: '/', failureRedirect: '/users/login', failureFlash: true }),
+	function (req, res) {
+		res.redirect('/');
+	});
 
-router.get('/logout', function(req, res){
+router.get('/logout', function (req, res) {
 	req.logout();
 
 	req.flash('success_msg', 'You are logged out');
 
 	res.redirect('/users/login');
 });
+
+//Confirmation
+router.get('/confirmation/:token', User.confirmationPost);
+
 
 module.exports = router;
