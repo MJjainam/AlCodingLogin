@@ -43,7 +43,7 @@ module.exports.sendPasswordResetLink = function (req, res, user) {
 
         // Send the email
         console.log("sending mail")
-        var transporter = nodemailer.createTransport("SMTP", { service: 'gmail', auth: { user: "algocodingpesu@gmail.com", pass: "********" } });
+        var transporter = nodemailer.createTransport("SMTP", { service: 'gmail', auth: { user: "algocodingpesu@gmail.com", pass: "algocoding2017" } });
         var mailOptions = { from: 'algocodingpesu@gmail.com', to: user.email, subject: 'Password change link', text: 'Hello,\n\n' + 'Please change your password with the link: \nhttp:\/\/' + req.headers.host + '\/password-change\/' + token.token + '.\n' };
         transporter.sendMail(mailOptions, function (err) {
             if (err) { return res.status(500).send({ msg: err.message }); }

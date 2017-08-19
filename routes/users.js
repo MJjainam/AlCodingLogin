@@ -87,7 +87,7 @@ router.post('/register', function (req, res) {
 
 					var transporter = nodemailer.createTransport("SMTP", { service: 'gmail', auth: { user: "algocodingpesu@gmail.com", pass: "**********" } });
 
-					var mailOptions = { from: 'algocodingpesu@gmail.com', to: newUser.email, subject: 'Account Verification Token', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/confirmation\/' + token.token + '.\n' };
+					var mailOptions = { from: 'algocodingpesu@gmail.com', to: newUser.email, subject: 'Account Verification Token', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/users\/confirmation\/' + token.token + '\n' };
 					transporter.sendMail(mailOptions, function (err) {
 						if (err) { return res.status(500).send({ msg: err.message }); }
 						res.status(200).send('A verification email has been sent to ' + newUser.email + '.');
@@ -103,14 +103,16 @@ router.post('/register', function (req, res) {
 	}
 });
 
-passport.use(new LocalStrategy(
-	function (username, password, done) {
+passport.use('login',new LocalStrategy({passReqToCallback: true},
+	function (req,username, password, done) {
 		User.getUserByUsername(username, function (err, user) {
 			if (err) throw err;
 			if (!user) {
 				return done(null, false, { message: 'Unknown User' });
 			}
-
+			if(!user.isVerified){
+				return done(null,false,{message:'User not verified yet'});
+			}
 			User.comparePassword(password, user.password, function (err, isMatch) {
 				if (err) throw err;
 				if (isMatch) {
@@ -133,10 +135,11 @@ passport.deserializeUser(function (id, done) {
 });
 
 router.post('/login',
-	passport.authenticate('local', { successRedirect: '/', failureRedirect: '/users/login', failureFlash: true }),
+	passport.authenticate('login', { successRedirect: '/', failureRedirect: '/users/login', failureFlash: true }),
 	function (req, res) {
 		res.redirect('/');
-	});
+	}
+);
 
 router.get('/logout', function (req, res) {
 	req.logout();

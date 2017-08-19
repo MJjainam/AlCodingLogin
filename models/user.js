@@ -17,6 +17,10 @@ var UserSchema = mongoose.Schema({
 	},
 	name: {
 		type: String
+	},
+	isVerified: { 
+		type: Boolean, 
+		default: false 
 	}
 });
 
@@ -74,7 +78,6 @@ module.exports.confirmationPost = function (req, res, next) {
                 if (err) { return res.status(500).send({ msg: err.message }); }
                 res.status(200).send("The account has been verified. Please log in.");
                 console.log('user registred');
-				// res.redirect('/users/login');
 				// req.flash('success_msg', 'You are registered and can now login');
             });
         });

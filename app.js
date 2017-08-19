@@ -1,7 +1,7 @@
 var express = require('express');
-var path =  require('path');
+var path = require('path');
 var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser'); 
+var bodyParser = require('body-parser');
 var exphbs = require('express-handlebars');
 var expressValidator = require('express-validator');
 var flash = require('connect-flash');
@@ -16,6 +16,7 @@ var db = mongoose.connection;
 var crypto = require('crypto');
 var nodemailer = require('nodemailer');
 
+var User = require('./models/user');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -26,49 +27,50 @@ var app = express();
 //view Engine
 
 //Says that views folder will handle our views
-app.set('views',path.join(__dirname,'views'));
+app.set('views', path.join(__dirname, 'views'));
 //Default handlebars will be controlled by the file called layout
-app.engine('handlebars',exphbs({defaultLayout:'layout'}));
-app.set('view engine','handlebars');
+app.engine('handlebars', exphbs({ defaultLayout: 'layout' }));
+app.set('view engine', 'handlebars');
 
 //BodyParser Middleware
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 //Set Static folder - will have all the style, images etc which can be accessed by browser
-app.use(express.static(path.join(__dirname,'public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 //Express Session
 app.use(session({
-    secret :'secret',
-    saveUninitialized:true,
-    resave:true
+  secret: 'secret',
+  saveUninitialized: true,
+  resave: true
 }));
 
 // Passport init
+
 app.use(passport.initialize());
 app.use(passport.session());
 
 // Express Validator
 app.use(expressValidator({
-    errorFormatter: function(param, msg, value) {
-        var namespace = param.split('.')
-        , root    = namespace.shift()
-        , formParam = root;
-  
-      while(namespace.length) {
-        formParam += '[' + namespace.shift() + ']';
-      }
-      return {
-        param : formParam,
-        msg   : msg,
-        value : value
-      };
-    }
-  }));
+  errorFormatter: function (param, msg, value) {
+    var namespace = param.split('.')
+      , root = namespace.shift()
+      , formParam = root;
 
-  // Connect Flash
+    while (namespace.length) {
+      formParam += '[' + namespace.shift() + ']';
+    }
+    return {
+      param: formParam,
+      msg: msg,
+      value: value
+    };
+  }
+}));
+
+// Connect Flash
 app.use(flash());
 
 // Global Vars
@@ -87,7 +89,7 @@ app.use('/users', users);
 // Set Port
 app.set('port', (process.env.PORT || 3000));
 
-app.listen(app.get('port'), function(){
-	console.log('Server started on port '+app.get('port'));
+app.listen(app.get('port'), function () {
+  console.log('Server started on port ' + app.get('port'));
 });
 
