@@ -6,7 +6,9 @@ var Token = require('../models/token');
 var crypto = require('crypto');
 
 var User = require('../models/user');  //model stores all the logical part. Importing 
-//functions assosiated with the user.
+										//functions assosiated with the user.
+var passwordReset = require('../models/password-reset');
+
 var nodemailer = require('nodemailer');
 
 // Register
@@ -19,6 +21,9 @@ router.get('/register', function (req, res) {
 router.get('/login', function (req, res) {
 	res.render('login');
 });
+
+
+
 
 // Register User
 router.post('/register', function (req, res) {
@@ -78,7 +83,7 @@ router.post('/register', function (req, res) {
 
 					// Send the email
 					console.log("sending mail")
-					var transporter = nodemailer.createTransport("SMTP", { service: 'gmail', auth: { user: "algocodingpesu@gmail.com", pass: "***********" } });
+					var transporter = nodemailer.createTransport("SMTP", { service: 'gmail', auth: { user: "algocodingpesu@gmail.com", pass: "algocoding2017" } });
 					var mailOptions = { from: 'algocodingpesu@gmail.com', to: newUser.email, subject: 'Account Verification Token', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/confirmation\/' + token.token + '.\n' };
 					transporter.sendMail(mailOptions, function (err) {
 						if (err) { return res.status(500).send({ msg: err.message }); }
@@ -140,6 +145,30 @@ router.get('/logout', function (req, res) {
 
 //Confirmation
 router.get('/confirmation/:token', User.confirmationPost);
+
+router.get('/password-reset',function(req,res){
+	res.render('password-reset');
+});
+
+router.post('/password-reset',function(req,res){
+	var email = req.body.email;
+	console.log("in routes: " +email);
+	passwordReset.getUserByEmail(req,res,email,passwordReset.sendPasswordResetLink);
+
+});
+
+router.get('/password-change/:token',function(req,res){
+	console.log("in password change get");
+	console.log(req.params.token);
+	res.render('password-change');
+});
+
+router.post('/password-change/:token',passwordReset.confirmPassword);
+
+
+
+
+
 
 
 module.exports = router;
