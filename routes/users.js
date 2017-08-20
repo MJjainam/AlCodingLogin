@@ -85,7 +85,7 @@ router.post('/register', function (req, res) {
 					// Send the email
 					console.log("sending mail")
 
-					var transporter = nodemailer.createTransport("SMTP", { service: 'gmail', auth: { user: "algocodingpesu@gmail.com", pass: "**********" } });
+					var transporter = nodemailer.createTransport("SMTP", { service: 'gmail', auth: { user: "algocodingpesu@gmail.com", pass: "algocoding2017" } });
 
 					var mailOptions = { from: 'algocodingpesu@gmail.com', to: newUser.email, subject: 'Account Verification Token', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/users\/confirmation\/' + token.token + '\n' };
 					transporter.sendMail(mailOptions, function (err) {
@@ -93,9 +93,7 @@ router.post('/register', function (req, res) {
 						res.status(200).send('A verification email has been sent to ' + newUser.email + '.');
 					});
 				});
-				// console.log('user registred');
-				// res.redirect('/users/login');
-				// req.flash('success_msg', 'You are registered and can now login');
+			
 			}
 		});
 
@@ -135,9 +133,9 @@ passport.deserializeUser(function (id, done) {
 });
 
 router.post('/login',
-	passport.authenticate('login', { successRedirect: '/', failureRedirect: '/users/login', failureFlash: true }),
-	function (req, res) {
-		res.redirect('/');
+passport.authenticate('login', { successRedirect: '/', failureRedirect: '/users/login', failureFlash: true }),
+function (req, res) {
+	res.redirect('/');
 	}
 );
 
@@ -164,13 +162,14 @@ router.post('/password-reset',function(req,res){
 
 });
 
-router.get('/password-change/:token',function(req,res){
+router.get('/password-change/:token?',function(req,res){
 	console.log("in password change get");
+	
 	console.log(req.params.token);
 	res.render('password-change');
 });
 
-router.post('/password-change/:token',passwordReset.confirmPassword);
+router.post('/password-change/:token?',passwordReset.confirmPassword);
 
 
 

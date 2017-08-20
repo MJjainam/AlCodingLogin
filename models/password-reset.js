@@ -43,7 +43,7 @@ module.exports.sendPasswordResetLink = function (req, res, user) {
 
         // Send the email
         console.log("sending mail")
-        var transporter = nodemailer.createTransport("SMTP", { service: 'gmail', auth: { user: "algocodingpesu@gmail.com", pass: "algocoding2017" } });
+        var transporter = nodemailer.createTransport("SMTP", { service: 'gmail', auth: { user: "algocodingpesu@gmail.com", pass: "********" } });
         var mailOptions = { from: 'algocodingpesu@gmail.com', to: user.email, subject: 'Password change link', text: 'Hello,\n\n' + 'Please change your password with the link: \nhttp:\/\/' + req.headers.host + '\/password-change\/' + token.token + '.\n' };
         transporter.sendMail(mailOptions, function (err) {
             if (err) { return res.status(500).send({ msg: err.message }); }
@@ -55,15 +55,21 @@ module.exports.sendPasswordResetLink = function (req, res, user) {
 
 module.exports.confirmPassword = function (req, res) {
     /*Should correct this */
-    console.log("asserting token of confirm password");
+    console.log("asserting token of confirm password in confirm password function");
     req.assert('token', 'Token cannot be blank').notEmpty();
-    // req.sanitize('email').normalizeEmail({ remove_dots: false });
+
     console.log("asserted token");
     /* {end} Should correct this */
 
     // Check for validation errors    
     var errors = req.validationErrors();
-    if (errors) return res.status(400).send(errors);
+    if (errors) {
+        return res.render('password-change', {
+            errors:
+            [{ msg: 'The reset link is wrong or might have expired' }]
+        });
+    }
+
 
     if (req.body.password != req.body.password2) {
         console.log("passwords do not match");
@@ -76,15 +82,17 @@ module.exports.confirmPassword = function (req, res) {
 
         // Find a matching token
         Token.findOne({ token: req.params.token }, function (err, token) {
-            if (!token) return res.status(400).send({ type: 'not-verified', msg: 'We were unable to find a valid token. Your token my have expired.' });
+            if (!token) {
+                return res.render('password-change', {
+                    errors:
+                    [{ msg: 'We were unable to find a valid token. Your token may have expired.' }]
+                });
+            }
 
             // If we found a token, find a matching user
             User.findOne({ _id: token._userId }, function (err, user) {
                 if (!user) return res.status(400).send({ msg: 'We were unable to find a user for this token.' });
-                if (user.isVerified) return res.status(400).send({ type: 'already-verified', msg: 'This user has already been verified.' });
 
-                // Verify and save the user
-                // user.isVerified = true;
                 bcrypt.genSalt(10, function (err, salt) {
                     bcrypt.hash(req.body.password, salt, function (err, hash) {
                         user.password = hash;
@@ -92,18 +100,12 @@ module.exports.confirmPassword = function (req, res) {
                             if (err) { return res.status(500).send({ msg: err.message }); }
                             // res.status(200).send("Password changes succesfully..");
                             console.log('password changed succesfully');
-                            // res.redirect('/users/login');
-                            // req.flash('success_msg', 'You are registered and can now login');
+                            return res.render('login',{
+                                errors:
+                                [{ msg: 'Password changed succesfully. Please login with your new credentials' }]
+                            });
                         });
                     });
-                });
-                user.password = req.body.password;
-                user.save(function (err) {
-                    if (err) { return res.status(500).send({ msg: err.message }); }
-                    res.status(200).send("Password changes succesfully..");
-                    console.log('password changed succesfully');
-                    // res.redirect('/users/login');
-                    // req.flash('success_msg', 'You are registered and can now login');
                 });
             });
         });
