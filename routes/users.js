@@ -23,8 +23,6 @@ router.get('/login', function (req, res) {
 });
 
 
-
-
 // Register User
 router.post('/register', function (req, res) {
 	var name = req.body.name;
@@ -90,7 +88,7 @@ router.post('/register', function (req, res) {
 					// Send the email
 					console.log("sending mail")
 
-					var transporter = nodemailer.createTransport("SMTP", { service: 'gmail', auth: { user: "algocodingpesu@gmail.com", pass: "**********" } });
+					var transporter = nodemailer.createTransport("SMTP", { service: 'gmail', auth: { user: "algocodingpesu@gmail.com", pass: "algocoding2017" } });
 
 					var mailOptions = { from: 'algocodingpesu@gmail.com', to: newUser.email, subject: 'Account Verification Token', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/users\/confirmation\/' + token.token + '\n' };
 					transporter.sendMail(mailOptions, function (err) {
@@ -144,13 +142,12 @@ function (req, res) {
 	}
 );
 
-router.get('/logout', function (req, res) {
-	req.logout();
 
-	req.flash('success_msg', 'You are logged out');
-
-	res.redirect('/users/login');
-});
+router.get('/logout', function (req, res){
+	req.session.destroy(function (err) {
+	  res.redirect('/users/login'); //Inside a callback… bulletproof!
+	});
+  });
 
 //Confirmation
 router.get('/confirmation/:token', User.confirmationPost);

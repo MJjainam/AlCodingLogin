@@ -1,4 +1,10 @@
 <h2 class="page-header">Account Login</h2>
+{{#if errors}}
+      {{#each errors}}
+        <div class="alert alert-danger">{{msg}}</div>
+        {{!-- {{break}} --}}
+      {{/each}}
+{{/if}}
 <form method="post" action="/users/login">
   <div class="form-group">
     <label>Username</label>
