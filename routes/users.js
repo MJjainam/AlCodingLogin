@@ -14,7 +14,6 @@ var nodemailer = require('nodemailer');
 
 // Register
 router.get('/register', function (req, res) {
-	console.log("ad");
 	res.render('register');
 });
 
@@ -62,11 +61,17 @@ router.post('/register', function (req, res) {
 			if (err) {
 				if (err.name === 'MongoError' && err.code === 11000) {
 					// Duplicate username
-					console.log(err);
-					req.flash('error_msg', "User already exists");
+					console.log("see here: " +err.message);
+					// console.log("---------" +typeof err.message);
+					var field = err.message.split('index: ')[1];//.split('.$')[1]
+					// now we have `email_1 dup key`
+					//field = field.split(' dup key')[0]
+					field = field.substring(0, field.lastIndexOf('_')) // returns email
+					console.log("Field here: " +field);
+					// req.flash('error_msg', "User already exists");
 					res.render('register', {
 						errors:
-						[{ msg: 'User already exists' }]
+						[{ msg: field + ' already exists' }]
 					});
 				}
 				else {
@@ -85,7 +90,7 @@ router.post('/register', function (req, res) {
 					// Send the email
 					console.log("sending mail")
 
-					var transporter = nodemailer.createTransport("SMTP", { service: 'gmail', auth: { user: "algocodingpesu@gmail.com", pass: "algocoding2017" } });
+					var transporter = nodemailer.createTransport("SMTP", { service: 'gmail', auth: { user: "algocodingpesu@gmail.com", pass: "**********" } });
 
 					var mailOptions = { from: 'algocodingpesu@gmail.com', to: newUser.email, subject: 'Account Verification Token', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/users\/confirmation\/' + token.token + '\n' };
 					transporter.sendMail(mailOptions, function (err) {
