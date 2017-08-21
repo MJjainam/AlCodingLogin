@@ -11,19 +11,18 @@
   "dependencies": {
     "bcryptjs": "*",
     "body-parser": "*",
-    "connect-flash" : "*",
-    "cookie-parser" : "^1.4.1",
-    "express" : "*",
-    "express-handlebars" : "*",
-    "express-messages" : "*",
-    "express-session " : "*",
-    "express-validator" : "*",
-    "mongodb" : "*",
-    "mongoose" :"*",
+    "connect-flash": "*",
+    "cookie-parser": "^1.4.1",
+    "express": "*",
+    "express-handlebars": "*",
+    "express-messages": "*",
+    "express-session ": "*",
+    "express-validator": "*",
+    "mongodb": "*",
+    "mongoose": "*",
+    "nodemailer": "^0.7.1",
     "passport": "*",
-    "passport-http" : "*",
-    "passport-local" :"*" ,
-    "nodemailer": "0.7.1" 
- 
+    "passport-http": "*",
+    "passport-local": "*"
   }
 }
