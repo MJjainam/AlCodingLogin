@@ -6,7 +6,7 @@ var Token = require('../models/token');
 var crypto = require('crypto');
 
 var User = require('../models/user');  //model stores all the logical part. Importing 
-										//functions assosiated with the user.
+//functions assosiated with the user.
 
 var passwordReset = require('../models/password-reset');
 
@@ -39,12 +39,20 @@ router.post('/register', function (req, res) {
 	req.checkBody('password', 'Password is required').notEmpty();
 	req.checkBody('password2', 'Passwords do not match').equals(req.body.password);
 
+	req.getValidationResult()
+		.then(function (result) {
+			// return res.render('register', {
+			// 	errors: result
+			// });	
+			// console.log(result.array());
+		});
+
 	var errors = req.validationErrors();
 
 	if (errors) {
-		console.log(errors);
+		req.flash('info', "User already exists");		
 		res.render('register', {
-			errors: errors
+			errors: req.flash('info')
 		});
 	} else {
 		var newUser = new User({
@@ -59,14 +67,14 @@ router.post('/register', function (req, res) {
 			if (err) {
 				if (err.name === 'MongoError' && err.code === 11000) {
 					// Duplicate username
-					console.log("see here: " +err.message);
+					console.log("see here: " + err.message);
 					// console.log("---------" +typeof err.message);
 					var field = err.message.split('index: ')[1];//.split('.$')[1]
 					// now we have `email_1 dup key`
 					//field = field.split(' dup key')[0]
 					field = field.substring(0, field.lastIndexOf('_')) // returns email
-					console.log("Field here: " +field);
-					// req.flash('error_msg', "User already exists");
+					console.log("Field here: " + field);
+					req.flash('error_msg', "User already exists");
 					res.render('register', {
 						errors:
 						[{ msg: field + ' already exists' }]
@@ -96,7 +104,7 @@ router.post('/register', function (req, res) {
 						res.status(200).send('A verification email has been sent to ' + newUser.email + '.');
 					});
 				});
-			
+
 			}
 		});
 
@@ -104,15 +112,15 @@ router.post('/register', function (req, res) {
 	}
 });
 
-passport.use('login',new LocalStrategy({passReqToCallback: true},
-	function (req,username, password, done) {
+passport.use('login', new LocalStrategy({ passReqToCallback: true },
+	function (req, username, password, done) {
 		User.getUserByUsername(username, function (err, user) {
 			if (err) throw err;
 			if (!user) {
 				return done(null, false, { message: 'Unknown User' });
 			}
-			if(!user.isVerified){
-				return done(null,false,{message:'User not verified yet'});
+			if (!user.isVerified) {
+				return done(null, false, { message: 'User not verified yet' });
 			}
 			User.comparePassword(password, user.password, function (err, isMatch) {
 				if (err) throw err;
@@ -136,42 +144,42 @@ passport.deserializeUser(function (id, done) {
 });
 
 router.post('/login',
-passport.authenticate('login', { successRedirect: '/', failureRedirect: '/users/login', failureFlash: true }),
-function (req, res) {
-	res.redirect('/');
+	passport.authenticate('login', { successRedirect: '/', failureRedirect: '/users/login', failureFlash: true }),
+	function (req, res) {
+		res.redirect('/');
 	}
 );
 
 
-router.get('/logout', function (req, res){
+router.get('/logout', function (req, res) {
 	req.session.destroy(function (err) {
-	  res.redirect('/users/login'); //Inside a callback… bulletproof!
+		res.redirect('/users/login'); //Inside a callback… bulletproof!
 	});
-  });
+});
 
 //Confirmation
 router.get('/confirmation/:token', User.confirmationPost);
 
 
-router.get('/password-reset',function(req,res){
+router.get('/password-reset', function (req, res) {
 	res.render('password-reset');
 });
 
-router.post('/password-reset',function(req,res){
+router.post('/password-reset', function (req, res) {
 	var email = req.body.email;
-	console.log("in routes: " +email);
-	passwordReset.getUserByEmail(req,res,email,passwordReset.sendPasswordResetLink);
+	console.log("in routes: " + email);
+	passwordReset.getUserByEmail(req, res, email, passwordReset.sendPasswordResetLink);
 
 });
 
-router.get('/password-change/:token?',function(req,res){
+router.get('/password-change/:token?', function (req, res) {
 	console.log("in password change get");
-	
+
 	console.log(req.params.token);
 	res.render('password-change');
 });
 
-router.post('/password-change/:token?',passwordReset.confirmPassword);
+router.post('/password-change/:token?', passwordReset.confirmPassword);
 
 
 
