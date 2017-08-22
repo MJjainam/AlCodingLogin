@@ -65,7 +65,7 @@ module.exports.confirmPassword = function (req, res) {
     if (errors) {
         req.flash('info','The reset link is wrong or might have expired');
         return res.render('password-change', {
-            errors: req.flash('info');
+            errors: req.flash('info')
         });
     }
 
