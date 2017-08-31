@@ -4,13 +4,13 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var Token = require('../models/token');
 var crypto = require('crypto');
+var nodemailer = require('nodemailer');
 
 var User = require('../models/user');  //model stores all the logical part. Importing 
 //functions assosiated with the user.
-
 var passwordReset = require('../models/password-reset');
+var Problem = require('../models/problem');
 
-var nodemailer = require('nodemailer');
 
 // Register
 router.get('/register', function (req, res) {
@@ -50,7 +50,7 @@ router.post('/register', function (req, res) {
 	var errors = req.validationErrors();
 
 	if (errors) {
-		req.flash('info', "User already exists");		
+		req.flash('info', "User already exists");
 		res.render('register', {
 			errors: req.flash('info')
 		});
@@ -179,7 +179,47 @@ router.get('/password-change/:token?', function (req, res) {
 	res.render('password-change');
 });
 
+
 router.post('/password-change/:token?', passwordReset.confirmPassword);
+
+
+
+router.get('/problems', function (req, res) {
+	// var ProblemSchema = schema.ProblemSchema;
+	// var Problem = mongoose.model('Problem', ProblemSchema);
+
+	// display problems sorted by name
+	Problem.find({}, null, { sort: { name: 1 } }, function (err, problems) {
+		if (err) {
+			throw err;
+			console.log(err);
+		}
+		else {
+			res.render('problems', { problems: problems });
+		}
+	});
+});
+// router.get('/problems/*', function(req, res) {
+//     // var ProblemSchema = schema.ProblemSchema;
+//     // var Problem = mongoose.model('Problem', ProblemSchema);
+
+//     var prob = {};
+//     prob.code = req.url.split('/problems/')[1];
+
+//     Problem.findOne(prob, function(err, problem) {
+//         if (err) {
+//             throw err;
+//             console.log(err);
+//         }
+//         else {
+//             if (!problem) {
+//                 res.end("Problem does not exist.");
+//                 return ;
+//             }
+//             res.render('problem_page', {problem: problem, auto_grade: config.AUTO_GRADING, manual_grade: config.MANUAL_GRADING});
+//         }
+//     });
+//   });
 
 
 
