@@ -1,0 +1,23 @@
+<h2 class="page-header">Submit the code</h2>
+{{#if errors}}
+      {{#each errors}}
+        <div class="alert alert-danger">{{this}}</div>
+      {{/each}}
+{{/if}}
+
+<form method="post" enctype='multipart/form-data' action="/users/submit">
+   <div class="form-group">
+    <label>Problem code</label>
+    <input type="text" class="form-control"  id="code" name="code">
+  </div>
+  <div class="form-group">
+    <label>language</label>
+    <input type="text" class="form-control"  id="language" name="language">
+  </div>
+   <div class="form-group">
+    <label>Submit</label>
+    <input type="file" class="form-control" id="file" name="file">
+  </div>
+ 
+  <button type="submit" class="btn btn-default">Submit</button>
+</form>

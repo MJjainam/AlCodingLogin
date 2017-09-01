@@ -12,6 +12,8 @@ var mongo = require('mongodb');
 var mongoose = require('mongoose');
 var mkdirp = require('mkdirp');
 var formidable = require('formidable');
+var crypto = require('crypto');
+
 mongoose.connect('mongodb://localhost/loginApp');
 var db = mongoose.connection;
 
@@ -96,4 +98,7 @@ app.set('port', (process.env.PORT || 3000));
 app.listen(app.get('port'), function () {
   console.log('Server started on port ' + app.get('port'));
 });
+
+// delete app.use(express.bodyParser());
+
 

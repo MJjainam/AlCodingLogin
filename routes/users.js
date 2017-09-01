@@ -5,12 +5,16 @@ var LocalStrategy = require('passport-local').Strategy;
 var Token = require('../models/token');
 var crypto = require('crypto');
 var nodemailer = require('nodemailer');
+var formidable = require('formidable');
+var mkdirp = require('mkdirp');
+var fs = require('fs');
+
+var utils = require('./utils');
 
 var User = require('../models/user');  //model stores all the logical part. Importing 
-//functions assosiated with the user.
 var passwordReset = require('../models/password-reset');
 var Problem = require('../models/problem');
-
+var Submission = require('../models/submission');
 
 // Register
 router.get('/register', function (req, res) {
@@ -199,32 +203,100 @@ router.get('/problems', function (req, res) {
 		}
 	});
 });
-// router.get('/problems/*', function(req, res) {
-//     // var ProblemSchema = schema.ProblemSchema;
-//     // var Problem = mongoose.model('Problem', ProblemSchema);
 
-//     var prob = {};
-//     prob.code = req.url.split('/problems/')[1];
+router.get('/submit', function (req, res, err) {
+	res.render('submit');
+});
 
-//     Problem.findOne(prob, function(err, problem) {
-//         if (err) {
-//             throw err;
-//             console.log(err);
-//         }
-//         else {
-//             if (!problem) {
-//                 res.end("Problem does not exist.");
-//                 return ;
-//             }
-//             res.render('problem_page', {problem: problem, auto_grade: config.AUTO_GRADING, manual_grade: config.MANUAL_GRADING});
-//         }
-//     });
-//   });
+router.post('/submit', ensureAuthenticated,function (req, res) {
+
+	// var form = req.body;
+	var form = new formidable.IncomingForm();
+	form.parse(req, function (err, fields, files) {
+		console.log(fields);
+		console.log("in 214\n");
+		var prob = {};
+		prob.code = fields.code;
+		console.log("in 216 " + prob.code);
+
+		// Some server side validation.
+		Problem.findOne(prob, function (err, problem) {
+			if (err) {
+				// throw err;
+				console.log(err);
+
+			}
+			else {
+				if (!problem) {
+					res.end("Problem does not exist.");
+					return;
+				}
+				// if (invalid(fields.language)) {
+				// 	res.end("Language does not exist.");
+				// 	return;
+				// }
+				console.log("in 233");
 
 
+				// Language and Problem is valid, client ensures file is present
+				// Create submission
+				// var SubmissionSchema = schema.SubmissionSchema;
+				// var Submission = mongoose.model('Submission', SubmissionSchema);
 
+				var submission = new Submission();
+				submission.problem_code = fields.code;
+				submission.username = req.session.username;
+				submission.language = fields.language;
+				// submission.grading_type = problem.grading_type;
 
+				// if (submission.grading_type == config.AUTO_GRADING) {
+				//     submission.judge_status = config.judge_statuses.QUEUED;
+				// }
+				// else {
+				//     submission.judge_status = config.judge_statuses.MANUAL_GRADE_PENDING;
+				// }
 
+				var filename = utils.generate_filename(fields.language);
+				submission.filename = filename;
 
+				submission.save(function (err) {
+					if (err) {
+						throw err;
+						console.log(err);
+					}
+					else {
+						console.log("Submission: " + submission.filename);
+						var basedir = __dirname + '/../uploads/submissions';
 
+						mkdirp.sync(basedir,function(err){
+							if(err){
+								console.log(err);
+							}
+							else{
+								console.log("created input");
+							}
+						});
+
+						var data = fs.readFileSync(files.file.path);
+						var newPath = basedir + '/' + filename;
+						fs.writeFileSync(newPath, data);
+						// res.redirect('/queue');
+						console.log("file uplaoded");
+						res.end();
+					}
+				});
+			}
+		});
+
+	});
+});
+
+function ensureAuthenticated(req, res, next) {
+	if (req.isAuthenticated()) {
+		return next();
+	} else {
+		//req.flash('error_msg','You are not logged in');
+		res.redirect('/users/login');
+	}
+}
 module.exports = router;
