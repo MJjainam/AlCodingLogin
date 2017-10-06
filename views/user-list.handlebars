@@ -1,0 +1,27 @@
+<h2 class="page-header">List of users</h2>
+{{#if errors}}
+      {{#each errors}}
+        <div class="alert alert-danger">{{msg}}</div>
+        {{!-- {{break}} --}}
+      {{/each}}
+{{/if}}
+
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th></th>
+    <th>Email Verified</th>
+  </tr>
+
+{{#if userList}}
+      {{#each userList}}
+      <tr>
+        {{!-- <div class="alert alert-danger">{{name}} {{isVerified}}</div> --}}
+        <th> {{name}}</th>
+        <th></th>
+        <th> {{isVerified}} </th>
+        {{!-- {{break}} --}}
+        </tr>
+      {{/each}}
+{{/if}}
