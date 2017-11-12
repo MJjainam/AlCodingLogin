@@ -87,7 +87,9 @@ router.post('/problem/add', function (req, res, next) {
                     });
 
 
-                    res.redirect('/admin/problem/add');
+                    res.render('admin-problem-add',{
+                        msg:"problem added succesfully"
+                    });
                 }
             }
         });

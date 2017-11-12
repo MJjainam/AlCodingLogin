@@ -5,6 +5,11 @@
         {{!-- {{break}} --}}
       {{/each}}
 {{/if}}
+{{#if msg}}
+        <div class="alert alert-danger">{{msg}}</div>
+        {{!-- {{break}} --}}
+{{/if}}
+
 <form method="post" enctype='multipart/form-data' >
   <div class="form-group">
     <label>Problem name</label>
