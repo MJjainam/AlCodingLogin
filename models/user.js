@@ -25,6 +25,10 @@ var UserSchema = mongoose.Schema({
 	isVerified: {
 		type: Boolean,
 		default: false
+	},
+	isLoggedIn:{
+		type: Boolean,
+		default: false
 	}
 });
 

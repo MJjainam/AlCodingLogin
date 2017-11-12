@@ -119,9 +119,10 @@ passport.use('login', new LocalStrategy({ passReqToCallback: true },
 			if (!user) {
 				return done(null, false, { message: 'Unknown User' });
 			}
-			if (!user.isVerified) {
+		/*	if (!user.isVerified) {
 				return done(null, false, { message: 'User not verified yet' });
 			}
+			*/
 			User.comparePassword(password, user.password, function (err, isMatch) {
 				if (err) throw err;
 				if (isMatch) {
