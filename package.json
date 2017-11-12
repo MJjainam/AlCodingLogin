@@ -23,6 +23,9 @@
     "nodemailer": "^0.7.1",
     "passport": "*",
     "passport-http": "*",
-    "passport-local": "*"
+    "passport-local": "*",
+    "formidable" :"*",
+    "mkdirp":"*",
+    "crypto":"*"
   }
 }
