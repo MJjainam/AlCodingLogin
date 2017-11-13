@@ -182,7 +182,23 @@ router.get('/password-change/:token?', function (req, res) {
 
 router.post('/password-change/:token?', passwordReset.confirmPassword);
 
+<<<<<<< HEAD
 
+=======
+router.get('/list',function(req,res){
+	User.getUserList(function(userList){
+		// console.log(req);
+		console.log(userList);
+		res.render('user-list',{userList:userList});
+		
+	});
+	// var userList = db.collection('users');
+	// userList.find().toArray(function (err, users) {
+		// console.log(users);
+	// });
+	//res.render('user-list');
+});
+>>>>>>> 5b49a81850b5150188c2bc46ccec7eeee03cab85
 
 
 

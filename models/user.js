@@ -1,6 +1,13 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcryptjs');
 
+<<<<<<< HEAD
+=======
+mongoose.connect('mongodb://localhost/loginApp');
+var db = mongoose.connection;
+
+
+>>>>>>> 5b49a81850b5150188c2bc46ccec7eeee03cab85
 // User Schema
 var UserSchema = mongoose.Schema({
 	username: {
@@ -91,4 +98,18 @@ module.exports.sendMessage = function(res,page,message){
 		errors:
 		[{ msg: message }]
 	});
+<<<<<<< HEAD
+=======
+}
+
+module.exports.getUserList = function(callback){
+	var userList = db.collection('users');
+	userList.find().toArray(function (err, users) {
+		// console.log(users);
+		callback(users);
+		
+	});
+
+	//res.render('user-list');
+>>>>>>> 5b49a81850b5150188c2bc46ccec7eeee03cab85
 }

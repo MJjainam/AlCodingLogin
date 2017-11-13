@@ -20,6 +20,10 @@ var User = require('./models/user');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+<<<<<<< HEAD
+=======
+var admin = require('./routes/admin');
+>>>>>>> 5b49a81850b5150188c2bc46ccec7eeee03cab85
 
 //Init App 
 var app = express();
@@ -84,6 +88,10 @@ app.use(function (req, res, next) {
 
 app.use('/', routes);
 app.use('/users', users);
+<<<<<<< HEAD
+=======
+app.use('/admin', admin);
+>>>>>>> 5b49a81850b5150188c2bc46ccec7eeee03cab85
 
 // Set Port
 app.set('port', (process.env.PORT || 3000));
