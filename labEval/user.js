@@ -7,11 +7,11 @@ program
   .description('Contact management system');
 
 program
-  .command('Register <name> <username> <password>')
+  .command('Register <name> <username> <email> <password> <confirmPassword>')
   .alias('a')
   .description('Register')
-  .action((name, username, password) => {
-    register({name, username, password});
+  .action((name, username, email, password, confirmPassword) => {
+    register({name, username, email, password, confirmPassword});
   });
 
 program

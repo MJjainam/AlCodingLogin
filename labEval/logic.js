@@ -74,6 +74,85 @@ const register = (user) => {
  * @returns {Json} contacts
  */
 
+
+createUser = function (newUser, callback) {
+	bcrypt.genSalt(10, function (err, salt) {
+		bcrypt.hash(newUser.password, salt, function (err, hash) {
+			newUser.password = hash;
+			newUser.save(callback);
+		});
+	});
+}
+
+
+const register = (name, username, email, password, confirmPassword) => {
+
+	var newUser = new User({
+		name: name,
+		email: email,
+		username: username,
+		password: password
+	});
+
+
+	createUser(newUser, function (err, user) {
+		if (err) {
+			if (err.name === 'MongoError' && err.code === 11000) {
+				// Duplicate username
+				console.log("see here: " + err.message);
+				// console.log("---------" +typeof err.message);
+				var field = err.message.split('index: ')[1];//.split('.$')[1]
+				// now we have `email_1 dup key`
+				//field = field.split(' dup key')[0]
+				field = field.substring(0, field.lastIndexOf('_')) // returns email
+				console.log("Field here: " + field);
+				req.flash('error_msg', "User already exists");
+				res.render('register', {
+					errors:
+						[{ msg: field + ' already exists' }]
+				});
+			}
+			else {
+				return res.status(500).send({ msg: err.message });
+			}
+		}
+		else {
+
+			// // Create a verification token for this user
+			// var token = new Token({ _userId: newUser._id, token: crypto.randomBytes(16).toString('hex') });
+
+			// // Save the verification token
+			// token.save(function (err) {
+			// 	if (err) { return res.status(500).send({ msg: err.message }); }
+
+			// 	// Send the email
+			// 	console.log("sending mail")
+
+			// 	var transporter = nodemailer.createTransport("SMTP", { service: 'gmail', auth: { user: "algocodingpesu@gmail.com", pass: "algocoding2017" } });
+
+			// 	var mailOptions = { from: 'algocodingpesu@gmail.com', to: newUser.email, subject: 'Account Verification Token', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/users\/confirmation\/' + token.token + '\n' };
+			// 	transporter.sendMail(mailOptions, function (err) {
+			// 		if (err) { return res.status(500).send({ msg: err.message }); }
+			// 		res.status(200).send('A verification email has been sent to ' + newUser.email + '.');
+			// 	});
+			//});
+
+		}
+	
+
+
+	// console.log("inside registration");
+	// User.insertOne({
+	// "name": name,
+	// "username": username,
+	// "email": email,
+	// "password": password,
+	// "isVerified": true,
+	// "isLoggedIn": false
+	// })
+	});
+}
+
 ///##### login requires editing
 const login = (username, pass) => {
 	console.log("before passport");
@@ -92,51 +171,51 @@ const login = (username, pass) => {
 
 		});
 	});
-		//		res.redirect('/');
-		//	}	
-		// Define search criteria. The search here is case-insensitive and inexact.
-		/*  const search = new RegExp(name, 'i');
-			User.find({$or: [{username: search }]})
-			.exec((err, contact) => {
-				assert.equal(null, err);
-				console.info(contact);
-				console.info(`${contact.length} matches`);
-				db.disconnect();
-			});*/
-	};
+	//		res.redirect('/');
+	//	}	
+	// Define search criteria. The search here is case-insensitive and inexact.
+	/*  const search = new RegExp(name, 'i');
+		User.find({$or: [{username: search }]})
+		.exec((err, contact) => {
+			assert.equal(null, err);
+			console.info(contact);
+			console.info(`${contact.length} matches`);
+			db.disconnect();
+		});*/
+};
 
-	// Export all methods
-	passport.use('login', new LocalStrategy({ passReqToCallback: true },
-		function (req, username, password, done) {
-			User.getUserByUsername(username, function (err, user) {
+// Export all methods
+passport.use('login', new LocalStrategy({ passReqToCallback: true },
+	function (req, username, password, done) {
+		User.getUserByUsername(username, function (err, user) {
+			if (err) throw err;
+			if (!user) {
+				return done(null, false, { message: 'Unknown User' });
+			}
+			/*	if (!user.isVerified) {
+					return done(null, false, { message: 'User not verified yet' });
+				}*/
+			User.comparePassword(password, user.password, function (err, isMatch) {
 				if (err) throw err;
-				if (!user) {
-					return done(null, false, { message: 'Unknown User' });
+				if (isMatch) {
+					return done(null, user);
+				} else {
+					return done(null, false, { message: 'Invalid password' });
 				}
-				/*	if (!user.isVerified) {
-						return done(null, false, { message: 'User not verified yet' });
-					}*/
-				User.comparePassword(password, user.password, function (err, isMatch) {
-					if (err) throw err;
-					if (isMatch) {
-						return done(null, user);
-					} else {
-						return done(null, false, { message: 'Invalid password' });
-					}
-				});
 			});
-		}));
-
-	passport.serializeUser(function (user, done) {
-		done(null, user.id);
-	});
-
-	passport.deserializeUser(function (id, done) {
-		User.getUserById(id, function (err, user) {
-			done(err, user);
 		});
+	}));
+
+passport.serializeUser(function (user, done) {
+	done(null, user.id);
+});
+
+passport.deserializeUser(function (id, done) {
+	User.getUserById(id, function (err, user) {
+		done(err, user);
 	});
+});
 
 
 
-	module.exports = {/*register,*/ login };
+module.exports = { register, login };
