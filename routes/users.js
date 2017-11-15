@@ -182,9 +182,6 @@ router.get('/password-change/:token?', function (req, res) {
 
 router.post('/password-change/:token?', passwordReset.confirmPassword);
 
-<<<<<<< HEAD
-
-=======
 router.get('/list',function(req,res){
 	User.getUserList(function(userList){
 		// console.log(req);
@@ -198,7 +195,6 @@ router.get('/list',function(req,res){
 	// });
 	//res.render('user-list');
 });
->>>>>>> 5b49a81850b5150188c2bc46ccec7eeee03cab85
 
 
 
