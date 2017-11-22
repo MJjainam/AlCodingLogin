@@ -5,10 +5,7 @@
     "mongoose": "^4.13.1",
     "passport": "*",
     "passport-http": "*",
-    "passport-local": "*",
-    "http": "*",
-    "querystring": "*",
-    "inquirer": "*"
+    "passport-local": "*"
  
   }
 }

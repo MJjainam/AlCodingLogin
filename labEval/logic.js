@@ -1,6 +1,16 @@
+// import { dirname } from 'path';
+
+// import { dirname } from 'path';
+// import { FILE } from 'dns';
+
 // change
 var passport = require('passport');
+var querystring = require('querystring');
+var http = require('http');
 var LocalStrategy = require('passport-local').Strategy;
+var mkdirp = require('mkdirp');
+var fs = require('fs');
+var inquirer = require('inquirer');
 
 
 const mongoose = require('mongoose'); // An Object-Document Mapper for Node.js
@@ -85,6 +95,47 @@ createUser = function (newUser, callback) {
 	});
 }
 
+const submit = (PROBLEMCODE,data,username,password)=>{
+	// console.log(data.toString('utf8'));
+	var post_data = querystring.stringify({
+		// 'compilation_level' : 'ADVANCED_OPTIMIZATIONS',
+		// 'output_format': 'json',
+		// 'output_info': 'compiled_code',
+		//   'warning_level' : 'QUIET',
+		//   'js_code' : codestring
+		'code': data.toString('utf8'),
+		'username': username,
+		'password': password,
+		'problemCode': PROBLEMCODE
+	});
+  
+	// An object of options to indicate where to post to
+	var post_options = {
+		host: 'localhost',
+		port: '3000',
+		path: '/code/upload',
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded',
+			'Content-Length': Buffer.byteLength(post_data)
+		}
+	};
+  
+	// Set up the request
+	var post_req = http.request(post_options, function(res) {
+		res.setEncoding('utf8');
+		res.on('data', function (chunk) {
+			console.log('Response: ' + chunk);
+		});
+	});
+
+	post_req.write(post_data);
+	post_req.end();
+
+
+
+}
+
 
 const register = (name, username, email, password, confirmPassword) => {
 
@@ -142,17 +193,12 @@ const register = (name, username, email, password, confirmPassword) => {
 	
 
 
-	// console.log("inside registration");
-	// User.insertOne({
-	// "name": name,
-	// "username": username,
-	// "email": email,
-	// "password": password,
-	// "isVerified": true,
-	// "isLoggedIn": false
 	// })
 	});
 }
+const getUser = (x)=>{
+	console.log(req.user);
+};
 
 ///##### login requires editing
 const login = (username, pass) => {
@@ -185,7 +231,6 @@ const login = (username, pass) => {
 		});*/
 };
 
-// Export all methods
 passport.use('login', new LocalStrategy({ passReqToCallback: true },
 	function (req, username, password, done) {
 		User.getUserByUsername(username, function (err, user) {
@@ -194,8 +239,8 @@ passport.use('login', new LocalStrategy({ passReqToCallback: true },
 				return done(null, false, { message: 'Unknown User' });
 			}
 			/*	if (!user.isVerified) {
-					return done(null, false, { message: 'User not verified yet' });
-				}*/
+				return done(null, false, { message: 'User not verified yet' });
+			}*/
 			User.comparePassword(password, user.password, function (err, isMatch) {
 				if (err) throw err;
 				if (isMatch) {
@@ -206,17 +251,18 @@ passport.use('login', new LocalStrategy({ passReqToCallback: true },
 			});
 		});
 	}));
-
-passport.serializeUser(function (user, done) {
-	done(null, user.id);
-});
-
-passport.deserializeUser(function (id, done) {
-	User.getUserById(id, function (err, user) {
-		done(err, user);
+	
+	passport.serializeUser(function (user, done) {
+		done(null, user.id);
 	});
-});
-
-
-
-module.exports = { register, login };
+	
+	passport.deserializeUser(function (id, done) {
+		User.getUserById(id, function (err, user) {
+			done(err, user);
+		});
+	});
+	
+	
+	
+	// Export all methods
+	module.exports = { register, login, getUser, submit};

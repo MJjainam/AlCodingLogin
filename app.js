@@ -21,6 +21,7 @@ var User = require('./models/user');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var admin = require('./routes/admin');
+var code = require('./routes/code');
 
 //Init App 
 var app = express();
@@ -86,6 +87,7 @@ app.use(function (req, res, next) {
 app.use('/', routes);
 app.use('/users', users);
 app.use('/admin', admin);
+app.use('/code',code);
 
 // Set Port
 app.set('port', (process.env.PORT || 3000));
