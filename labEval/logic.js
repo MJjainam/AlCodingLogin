@@ -11,33 +11,20 @@ var LocalStrategy = require('passport-local').Strategy;
 var mkdirp = require('mkdirp');
 var fs = require('fs');
 var inquirer = require('inquirer');
-
-
+//var prompt = require('prompt');
+var bcrypt = require('bcryptjs');
 const mongoose = require('mongoose'); // An Object-Document Mapper for Node.js
 const assert = require('assert'); // N.B: Assert module comes bundled with Node.js.
 mongoose.Promise = global.Promise; // Allows us to use Native promises without throwing error.
 
 // Connect to a single MongoDB instance. The connection string could be that of remote server
 // We assign the connection instance to a constant to be used later in closing the connection
-const db = mongoose.connect('mongodb://localhost/loginApp');
+const db = mongoose.connect('mongodb://localhost/loginApp', {useMongoClient: true});
 
 // Converts value to lowercase
 function toLower(v) {
 	return v.toLowerCase();
 }
-/*
-// Define a contact Schema
-const userSchema = mongoose.Schema({
-  //firstname: { type: String, set: toLower },
-  username: { type: String, set: toLower },
-  //phone: { type: String, set: toLower },
-  //email: { type: String, set: toLower }
-  password: { type: String, set: toLower}
-});
-*/
-// Define model as an interface with the database
-//const User = mongoose.model('User', userSchema);
-
 
 var UserSchema = mongoose.Schema({
 	username: {
@@ -71,7 +58,7 @@ var User = module.exports = mongoose.model('User', UserSchema);
 /**
  * @function  [addContact]
  * @returns {String} Status
- 
+
 const register = (user) => {
   User.create(user, (err) => {
     assert.equal(null, err);
@@ -108,7 +95,7 @@ const submit = (PROBLEMCODE,data,username,password)=>{
 		'password': password,
 		'problemCode': PROBLEMCODE
 	});
-  
+
 	// An object of options to indicate where to post to
 	var post_options = {
 		host: 'localhost',
@@ -120,7 +107,7 @@ const submit = (PROBLEMCODE,data,username,password)=>{
 			'Content-Length': Buffer.byteLength(post_data)
 		}
 	};
-  
+
 	// Set up the request
 	var post_req = http.request(post_options, function(res) {
 		res.setEncoding('utf8');
@@ -137,7 +124,7 @@ const submit = (PROBLEMCODE,data,username,password)=>{
 }
 
 
-const register = (name, username, email, password, confirmPassword) => {
+const register = (name, username, email, password) => {
 
 	var newUser = new User({
 		name: name,
@@ -145,7 +132,6 @@ const register = (name, username, email, password, confirmPassword) => {
 		username: username,
 		password: password
 	});
-
 
 	createUser(newUser, function (err, user) {
 		if (err) {
@@ -190,7 +176,7 @@ const register = (name, username, email, password, confirmPassword) => {
 			//});
 
 		}
-	
+
 
 
 	// })
@@ -219,7 +205,7 @@ const login = (username, pass) => {
 		});
 	});
 	//		res.redirect('/');
-	//	}	
+	//	}
 	// Define search criteria. The search here is case-insensitive and inexact.
 	/*  const search = new RegExp(name, 'i');
 		User.find({$or: [{username: search }]})
@@ -251,18 +237,18 @@ passport.use('login', new LocalStrategy({ passReqToCallback: true },
 			});
 		});
 	}));
-	
+
 	passport.serializeUser(function (user, done) {
 		done(null, user.id);
 	});
-	
+
 	passport.deserializeUser(function (id, done) {
 		User.getUserById(id, function (err, user) {
 			done(err, user);
 		});
 	});
-	
-	
-	
+
+
+
 	// Export all methods
 	module.exports = { register, login, getUser, submit};
