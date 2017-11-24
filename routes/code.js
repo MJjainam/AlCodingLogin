@@ -9,6 +9,7 @@ var formidable = require('formidable');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var crypto = require('crypto');
+const { exec } = require("child_process");	
 
 
 var User = require('../models/user');  //model stores all the logical part. Importing 
@@ -28,17 +29,17 @@ router.post('/upload', function (req, res) {
         if(err || !user){
             // console.log("problem is there");
             // console.log(message.message);
-            res.end(message.message);
+                        res.end(message.message);
         }
         else{
             // console.log("no problem");
             var newDirectory = __dirname + "/../uploads/submissions/" + req.body.username +"/" + req.body.problemCode +"/";
-            var newFile =  "1.java"
+            var newFile =  "1.py"
             // console.log(__dirname);
             mkdirp.sync(newDirectory);
             fs.writeFileSync(newDirectory + newFile,req.body.code);
-            res.end("Right credentials. Your code is submitted and being compiled");
-            
+            //Irfan's code goes here
+            //Do the compilation       
         }
     });
     // console.log(req.body.code);
