@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcryptjs');
 
-mongoose.connect('mongodb://localhost/loginApp');
+mongoose.connect('mongodb://localhost/loginApp',{useMongoClient:true});
 var db = mongoose.connection;
 
 

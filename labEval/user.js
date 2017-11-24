@@ -15,6 +15,7 @@ const loginCredentials = [
     message : 'Enter password:'
   }
 ];
+
 // Require logic.js file and extract controller functions using JS destructuring assignment
 const { register, login, getUser, submit} = require('./logic');
 
@@ -42,13 +43,16 @@ program
   .description('Submit the code')
   .action((PROBLEMCODE,FILENAME)=> {
     inquirer.prompt(loginCredentials).then(answers =>{
-      submit(PROBLEMCODE,fs.readFileSync(__dirname +'/' +FILENAME),answers.username,answers.password);
-
-    })
+      submit(PROBLEMCODE,fs.readFileSync(__dirname +'/' +FILENAME),answers.username,answers.password,function(){
+        process.exit();
+      });
+      // console.log("back to user.js");
+      // process.exit();
+    });
   });
 program
   .command('user <x>')
   .alias('u')
-  .action((x )=> getUser(x));
+  .action((x)=> getUser(x));
 
 program.parse(process.argv);

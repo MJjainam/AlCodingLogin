@@ -19,7 +19,7 @@ mongoose.Promise = global.Promise; // Allows us to use Native promises without t
 
 // Connect to a single MongoDB instance. The connection string could be that of remote server
 // We assign the connection instance to a constant to be used later in closing the connection
-const db = mongoose.connect('mongodb://localhost/loginApp');
+const db = mongoose.connect('mongodb://localhost/loginApp', { useMongoClient: true });
 
 // Converts value to lowercase
 function toLower(v) {
@@ -95,7 +95,7 @@ createUser = function (newUser, callback) {
 	});
 }
 
-const submit = (PROBLEMCODE,data,username,password)=>{
+const submit = (PROBLEMCODE, data, username, password, callback) => {
 	// console.log(data.toString('utf8'));
 	var post_data = querystring.stringify({
 		// 'compilation_level' : 'ADVANCED_OPTIMIZATIONS',
@@ -108,7 +108,7 @@ const submit = (PROBLEMCODE,data,username,password)=>{
 		'password': password,
 		'problemCode': PROBLEMCODE
 	});
-  
+
 	// An object of options to indicate where to post to
 	var post_options = {
 		host: 'localhost',
@@ -117,20 +117,29 @@ const submit = (PROBLEMCODE,data,username,password)=>{
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/x-www-form-urlencoded',
-			'Content-Length': Buffer.byteLength(post_data)
+			'Content-Length': Buffer.byteLength(post_data),
+			'Connection': 'close'
+
 		}
 	};
-  
+
 	// Set up the request
-	var post_req = http.request(post_options, function(res) {
+	var post_req = http.request(post_options, function (res) {
 		res.setEncoding('utf8');
 		res.on('data', function (chunk) {
 			console.log('Response: ' + chunk);
+			// res.end();
+			// res.destroy();
+		});
+		res.on('end', () => {
+			// console.log('No more data in response.');
+			callback();
 		});
 	});
 
 	post_req.write(post_data);
 	post_req.end();
+	console.log("back");
 
 
 
@@ -190,13 +199,13 @@ const register = (name, username, email, password, confirmPassword) => {
 			//});
 
 		}
-	
 
 
-	// })
+
+		// })
 	});
 }
-const getUser = (x)=>{
+const getUser = (x) => {
 	console.log(req.user);
 };
 
@@ -251,18 +260,18 @@ passport.use('login', new LocalStrategy({ passReqToCallback: true },
 			});
 		});
 	}));
-	
-	passport.serializeUser(function (user, done) {
-		done(null, user.id);
+
+passport.serializeUser(function (user, done) {
+	done(null, user.id);
+});
+
+passport.deserializeUser(function (id, done) {
+	User.getUserById(id, function (err, user) {
+		done(err, user);
 	});
-	
-	passport.deserializeUser(function (id, done) {
-		User.getUserById(id, function (err, user) {
-			done(err, user);
-		});
-	});
-	
-	
-	
-	// Export all methods
-	module.exports = { register, login, getUser, submit};
+});
+
+
+
+// Export all methods
+module.exports = { register, login, getUser, submit };

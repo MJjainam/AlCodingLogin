@@ -26,15 +26,18 @@ router.post('/upload', function (req, res) {
     // console.log(authenticate('jai', 'asd'));
     authenticate(req.body.username,req.body.password,function(err,user,message){
         if(err || !user){
-            console.log("problem is there");
+            // console.log("problem is there");
+            // console.log(message.message);
+            res.end(message.message);
         }
         else{
-            console.log("no problem");
+            // console.log("no problem");
             var newDirectory = __dirname + "/../uploads/submissions/" + req.body.username +"/" + req.body.problemCode +"/";
             var newFile =  "1.java"
             // console.log(__dirname);
             mkdirp.sync(newDirectory);
             fs.writeFileSync(newDirectory + newFile,req.body.code);
+            res.end("Right credentials. Your code is submitted and being compiled");
             
         }
     });
