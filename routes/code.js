@@ -39,7 +39,8 @@ router.post('/upload', function (req, res) {
             mkdirp.sync(newDirectory);
             fs.writeFileSync(newDirectory + newFile,req.body.code);
             //Irfan's code goes here
-            //Do the compilation       
+            //Do the compilation
+            res.end("Your code is submitted and being compiled");       
         }
     });
     // console.log(req.body.code);

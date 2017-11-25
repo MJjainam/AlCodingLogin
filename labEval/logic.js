@@ -1,8 +1,3 @@
-// import { dirname } from 'path';
-
-// import { dirname } from 'path';
-// import { FILE } from 'dns';
-
 // change
 var passport = require('passport');
 var querystring = require('querystring');
@@ -85,11 +80,6 @@ createUser = function (newUser, callback) {
 const submit = (PROBLEMCODE, data, username, password, callback) => {
 	// console.log(data.toString('utf8'));
 	var post_data = querystring.stringify({
-		// 'compilation_level' : 'ADVANCED_OPTIMIZATIONS',
-		// 'output_format': 'json',
-		// 'output_info': 'compiled_code',
-		//   'warning_level' : 'QUIET',
-		//   'js_code' : codestring
 		'code': data.toString('utf8'),
 		'username': username,
 		'password': password,
@@ -115,8 +105,6 @@ const submit = (PROBLEMCODE, data, username, password, callback) => {
 		res.setEncoding('utf8');
 		res.on('data', function (chunk) {
 			console.log('Response: ' + chunk);
-			// res.end();
-			// res.destroy();
 		});
 		res.on('end', () => {
 			// console.log('No more data in response.');

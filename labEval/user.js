@@ -80,8 +80,6 @@ program
       submit(PROBLEMCODE,fs.readFileSync(__dirname +'/' +FILENAME),answers.username,answers.password,function(){
         process.exit();
       });
-      // console.log("back to user.js");
-      // process.exit();
     });
   });
 program
