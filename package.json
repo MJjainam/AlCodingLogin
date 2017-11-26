@@ -26,6 +26,7 @@
     "passport-local": "*",
     "formidable" :"*",
     "mkdirp":"*",
+    "shelljs": "*",
     "crypto":"*"
   }
 }
