@@ -43,6 +43,7 @@ router.post('/problem/add', function (req, res, next) {
                     problem.code = fields.code;
                     problem.description = fields.description;
                     problem.points = fields.points;
+                    problem.estimated_completion_time = fields.estCompletionTime;
                     // problem.grading_type = form.grading_type;
 
                     problem.input_format = fields.input_format;

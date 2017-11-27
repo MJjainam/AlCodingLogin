@@ -8,6 +8,7 @@ var ProblemSchema = new mongoose.Schema({
 
     description: String,
     points: Number,
+    estimated_completion_time: Number,
     grading_type: String,
 
     // The stuff below makes sense only for auto grading
