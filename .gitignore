@@ -1,5 +1,3 @@
 node_modules/*
-<<<<<<< HEAD
-=======
 uploads/*
->>>>>>> 5b49a81850b5150188c2bc46ccec7eeee03cab85
+labEval/node_modules/*

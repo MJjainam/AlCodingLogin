@@ -23,8 +23,20 @@ var users = require('./routes/users');
 var admin = require('./routes/admin');
 var code = require('./routes/code');
 
+
+//add helmet module
+var helmet=require('helmet');
+
+
 //Init App 
 var app = express();
+
+//use helmet module 
+app.use(helmet());
+app.use(helmet.noCache());
+app.use(helmet.xssFilter());
+app.use(helmet.noSniff());
+app.use(helmet.frameguard());
 
 //view Engine
 

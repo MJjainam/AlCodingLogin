@@ -1,3 +1,5 @@
+// import { MongoClient } from '../../../../../.cache/typescript/2.6/node_modules/@types/mongodb';
+
 // import { dirname } from 'path';
 
 // import { dirname } from 'path';
@@ -21,12 +23,25 @@ mongoose.Promise = global.Promise; // Allows us to use Native promises without t
 
 // Connect to a single MongoDB instance. The connection string could be that of remote server
 // We assign the connection instance to a constant to be used later in closing the connection
-const db = mongoose.connect('mongodb://localhost/loginApp');
+const db = mongoose.connect('mongodb://localhost/loginApp',{useMongoClient:true});
 
 // Converts value to lowercase
 function toLower(v) {
 	return v.toLowerCase();
 }
+
+//added security here
+var security_default = require('./security-config.json5');
+
+// for(let i = 0; i < security_default.security.length; i++) {
+//   res.setHeader(
+//     security_default.security[i].name,
+//     security_default.security[i].value
+//   );
+// }
+/////////
+
+
 /*
 // Define a contact Schema
 const userSchema = mongoose.Schema({
@@ -127,7 +142,7 @@ const submit = (PROBLEMCODE,data,username,password)=>{
 		});
 		res.on('end', () => {
 			// console.log('No more data in response.');
-			callback();
+			// callback();
 		});
 	});
 
@@ -140,7 +155,8 @@ const submit = (PROBLEMCODE,data,username,password)=>{
 			return console.log(err)
 		}
 		console.log("working");
-	});
+		console.log("seeee here: " +__dirname+"/temp.py");
+	})();
 
 	shell.exec("chmod 777 temp.py");
 

@@ -13,20 +13,21 @@
     "body-parser": "*",
     "connect-flash": "*",
     "cookie-parser": "^1.4.1",
+    "crypto": "*",
     "express": "*",
     "express-handlebars": "*",
     "express-messages": "*",
     "express-session": "*",
     "express-validator": "*",
+    "formidable": "*",
+    "helmet": "^3.9.0",
+    "mkdirp": "*",
     "mongodb": "*",
     "mongoose": "*",
     "nodemailer": "^0.7.1",
     "passport": "*",
     "passport-http": "*",
     "passport-local": "*",
-    "formidable" :"*",
-    "mkdirp":"*",
-    "shelljs": "*",
-    "crypto":"*"
+    "shelljs": "*"
   }
 }
