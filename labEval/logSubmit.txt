@@ -32,3 +32,16 @@ jai,ai_01,11:56,failed
 jai,ai_01,11:57,failed
 jai,ai_01,11:57,success
 jai,SUM01,11:57,success
+jai,SUM01,12:4,failed
+jai,SUM01,12:6,failed
+jai,SUM01,12:10,failed
+jai,SUM01,12:11,failed
+jai,SUM01,12:12,failed
+jai,SUM01,12:13,failed
+jai,SUM01,12:14,failed
+jai,SUM01,12:15,failed
+jai,SUM01,12:17,failed
+jai,SUM01,12:18,success
+jai,SUM01,12:20,success
+jai,SUM01,12:28,success
+jai,SUM01,12:28,failed
