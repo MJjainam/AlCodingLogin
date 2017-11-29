@@ -181,8 +181,11 @@ const submit = (PROBLEMCODE,data,username,password)=>{
 	// if(stats.size == 0){
 	// 	console.log("file is empty");
 	// }
-	console.log('python3 temp.py < ../uploads/problems/'+PROBLEMCODE+'/input/0.in' + ' > ' + '../uploads/submissions/'+username+'/'+PROBLEMCODE+'/1.txt');
-	shell.exec('python3 temp.py < ../uploads/problems/'+PROBLEMCODE+'/input/0.in' + ' > ' + '../uploads/submissions/'+username+'/'+PROBLEMCODE+'/1.txt',(err,stdout,stderr) => {
+	console.log('python3 temp.py < ../uploads/problems/'+PROBLEMCODE+'/input/0.in' + ' > ' + '../uploads/submissions/'+username+'/'+PROBLEMCODE+'/output.txt');
+	shell.exec('mkdir -p ../uploads/submissions/'+username+'/'+PROBLEMCODE);
+	fs.writeFileSync("../uploads/submissions/"+username+'/'+PROBLEMCODE + "/code.py",data);
+	shell.exec('chmod 777 '+'../uploads/submissions/'+username+'/'+PROBLEMCODE+'/output.txt');
+	shell.exec('python3 temp.py < ../uploads/problems/'+PROBLEMCODE+'/input/0.in' + ' > ' + '../uploads/submissions/'+username+'/'+PROBLEMCODE+'/output.txt',(err,stdout,stderr) => {
 		if(err){
 			console.log(err);
 			
@@ -192,12 +195,13 @@ const submit = (PROBLEMCODE,data,username,password)=>{
 
 	
 	console.log("submission completed : checking test cases");
-	shell.exec("diff ../uploads/problems/"+PROBLEMCODE+"/output/0.out ../uploads/submissions/"+username+"/"+PROBLEMCODE+"/1.txt > final.txt");
+	shell.exec("diff ../uploads/problems/"+PROBLEMCODE+"/output/0.out ../uploads/submissions/"+username+"/"+PROBLEMCODE+"/output.txt > final.txt");
 	const stats=fs.statSync("final.txt");
 	//console.log(stats.size+"\n");
 	var submissionSuccessful=0;
 	if(stats.size==0){
 		console.log("successful submission");
+
 		submissionSuccessful=1;
 	}
 	else{

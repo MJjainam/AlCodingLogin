@@ -16,3 +16,11 @@ jai,ai_01,11:13,success
 jai,ai_01,11:14,success
 jai,ai_01,11:14,success
 jai,ai_01,11:19,success
+jai,SUM01,11:25,success
+jai,SUM01,11:35,failed
+jai,SUM01,11:38,failed
+jai,SUM01,11:39,failed
+jai,SUM01,11:39,failed
+jai,ai_01,11:40,failed
+jai,ai_01,11:41,failed
+jai,SUM01,11:45,failed
