@@ -150,24 +150,24 @@ const submit = (PROBLEMCODE,data,username,password)=>{
 	post_req.end();
 
 	//console.log(__dirname);
-	fs.writeFile(__dirname+"/temp.py",data,function(err){
+	fs.writeFileSync(__dirname+"/temp.py",data)/*,function(err){
 		if(err){
 			return console.log(err)
 		}
 		console.log("working");
 		console.log("seeee here: " +__dirname+"/temp.py");
-	})();
+	})();*/
 
 	shell.exec("chmod 777 temp.py");
 
-	// var compilerString = "gcc -c -Wall " + "temp.c" ;
-	// console.log(compilerString);
+	//var compilerString = "gcc -c -Wall " + "temp.c" ;
+	//console.log(compilerString);
 	// //console.log(shell.pwd());
 	// //console.log(__dirname);
-	// shell.exec(compilerString);
+	//shell.exec(compilerString);
 	//shell.exec("./a.out" + " " + "< " + "../uploads/problems/"+PROBLEMCODE+"/input/0.in"+" >"+ "../temp.txt");
 
-	// proc=shell.exec('python3 code.py 2> errors.txt',(err,stdout,stderr) =>{
+	//proc=shell.exec('python3 code.py 2> errors.txt',(err,stdout,stderr) =>{
 	// 	if(err){
 	// 		console.log("error"+err);
 	// 	}
@@ -181,8 +181,8 @@ const submit = (PROBLEMCODE,data,username,password)=>{
 	// if(stats.size == 0){
 	// 	console.log("file is empty");
 	// }
-
-	shell.exec('python3 code.py < ../uploads/problems/'+PROBLEMCODE+'/input/0.in' + ' > ' + '../uploads/submissions/'+username+'/'+PROBLEMCODE+'/1.txt',(err,stdout,stderr) => {
+	console.log('python3 temp.py < ../uploads/problems/'+PROBLEMCODE+'/input/0.in' + ' > ' + '../uploads/submissions/'+username+'/'+PROBLEMCODE+'/1.txt');
+	shell.exec('python3 temp.py < ../uploads/problems/'+PROBLEMCODE+'/input/0.in' + ' > ' + '../uploads/submissions/'+username+'/'+PROBLEMCODE+'/1.txt',(err,stdout,stderr) => {
 		if(err){
 			console.log(err);
 			

@@ -1,1 +1,2 @@
-print("Python script ran")
+a=input()
+print(a)
