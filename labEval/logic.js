@@ -186,12 +186,12 @@ const submit = (PROBLEMCODE,data,username,password)=>{
 	fs.writeFileSync("../uploads/submissions/"+username+'/'+PROBLEMCODE + "/code.py",data);
 	shell.exec('chmod 777 '+'../uploads/submissions/'+username+'/'+PROBLEMCODE+'/output.txt');
 	shell.exec('python3 temp.py < ../uploads/problems/'+PROBLEMCODE+'/input/0.in' + ' > ' + '../uploads/submissions/'+username+'/'+PROBLEMCODE+'/output.txt',(err,stdout,stderr) => {
-		if(err){
-			console.log(err);
-			
-		}
-		//console.log("outside if");
-	});
+		  	if(err){
+		  		console.log(err);
+				
+		  	}
+		  	//console.log("outside if");
+		 });
 
 	
 	console.log("submission completed : checking test cases");
