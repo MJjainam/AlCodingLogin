@@ -191,7 +191,7 @@ const submit = (PROBLEMCODE, data, username, password) => {
 				logString = logString + ",failed";
 			}
 			//console.log(logString);
-			shell.exec("echo " + logString + " >> logSubmit.txt");
+			shell.exec("echo " + logString + " >> logSubmit.csv");
 			process.exit();
 
 		}
@@ -325,7 +325,7 @@ const login = (username, pass) => {
 
 	var date = new Date();
 	var logLogin = username + "," + date.getHours() + ":" + date.getMinutes();
-	shell.exec("echo " + logLogin + " >> logLogin.txt");
+	shell.exec("echo " + logLogin + " >> logLogin.csv");
 	process.exit();
 };
 
